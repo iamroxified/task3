@@ -46,9 +46,9 @@ class AuthController extends Controller
             'description' => '',
         ]);
 
-        $user->organisations()->attach($organisation->orgId);
+        $organisation->users()->attach($user);
 
-        $token = JWTAuth::fromUser($user);
+        $token = auth()->login($user);
 
         return response()->json([
             'status' => 'success',

@@ -9,8 +9,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject 
 {
 
    
@@ -26,6 +27,7 @@ class User extends Authenticatable
        'userId', 'firstName', 'lastName', 'email', 'password', 'phone'
     ];
 
+    protected $primaryKey = 'userId';
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -35,6 +37,8 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+
 
     /**
      * Get the attributes that should be cast.
@@ -68,7 +72,7 @@ class User extends Authenticatable
 
     public function organisations(): BelongsToMany
     {
-        return $this->belongsToMany(Organisation::class, 'organisation_user', 'userId', 'organisation_id');   
+        return $this->belongsToMany(Organisation::class, 'organisation_user', 'userId', 'orgId');   
      }
      public function getJWTIdentifier()
      {
