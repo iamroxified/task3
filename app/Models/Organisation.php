@@ -4,20 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Organisation extends Model
 {
     use HasFactory;
-     protected $fillable = [
-        'id', 'name', 'description'
+    protected $primaryKey = 'orgId';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    protected $fillable = [
+        'orgId', 'name', 'description'
     ];
 
-    protected $casts = [
-        'id' => 'string',
-    ];
 
-    public function users()
+    protected static function boot()
     {
-        return $this->belongsToMany(User::class, 'organisation_user');
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
+        });
+    }
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'organisation_user', 'organisation_id', 'userId');
     }
 }

@@ -7,14 +7,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
 
-        public function chirps(): HasMany
-    {
-        return $this->hasMany(Chirp::class);
-    }
+   
 
     use HasFactory, Notifiable;
 
@@ -51,13 +50,34 @@ class User extends Authenticatable
         ];
     }
     protected $casts = [
-        'id' => 'string',
+        'userId' => 'string',
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
 
-
-
-    public function organisations()
+    protected static function boot()
     {
-        return $this->belongsToMany(Organisation::class, 'organisation_user');
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
+        });
     }
+
+    public function organisations(): BelongsToMany
+    {
+        return $this->belongsToMany(Organisation::class, 'organisation_user', 'userId', 'organisation_id');   
+     }
+     public function getJWTIdentifier()
+     {
+         return $this->getKey();
+     }
+ 
+     public function getJWTCustomClaims()
+     {
+         return [];
+     }
+
 }

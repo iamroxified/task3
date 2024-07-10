@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('organisation_users', function (Blueprint $table) {
-              $table->uuid('user_id');
-        $table->uuid('organisation_id');
-        $table->foreign('user_id')->references('userId')->on('users')->onDelete('cascade');
-        $table->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
-        $table->timestamps();
+        Schema::create('organisation_user', function (Blueprint $table) {
+            $table->uuid('user_id');
+            $table->uuid('organisation_id');
+            $table->timestamps();
+    
+            $table->foreign('user_id')->references('userId')->on('users')->onDelete('cascade');
+            $table->foreign('organisation_id')->references('orgId')->on('organisations')->onDelete('cascade');
         });
     }
 
